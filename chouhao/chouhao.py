@@ -95,13 +95,15 @@ class GUI(Tk):
             try:
                 if int(self.entry.get()) <= 0:
                     raise ValueError("请输入正整数")
+                if int(self.entry.get()) > 150:
+                    raise ValueError("数字太大")
                 with open('chouhao.db','w') as f:
                     f.write(self.entry.get())
                 root.destroy()
-            except ValueError:
+            except ValueError as e:
                 with open('chouhao.db','w') as f:
                     f.write(self.i)
-                messagebox.showerror(title='温馨提示', message = "请输入正整数")
+                messagebox.showerror(title='温馨提示', message = str(e))
                 self.entry.focus_set()
 
         Button(root, text="确定", command = on_click).pack(side=LEFT,padx = 75)
