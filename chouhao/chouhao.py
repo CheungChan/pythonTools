@@ -52,16 +52,16 @@ class GUI(Tk):
 
     def setting(self):
 
-        root = Toplevel()
-        root.title("设置随机个数")
-        root.geometry('300x100+300+300')
+        popwindow = Toplevel()
+        popwindow.title("设置随机个数")
+        popwindow.geometry('300x100+300+300')
 
-        l1 = Label(root, text="随机个数(设置完请重启）：")
+        l1 = Label(popwindow, text="随机个数(设置完请重启）：")
         l1.pack()
         with open('chouhao.db','r') as f:
             self.i = f.read()
         v = StringVar()
-        self.entry = Entry(root,textvariable = v)
+        self.entry = Entry(popwindow,textvariable = v)
         v.set(self.i)
         self.entry.icursor('end')
         self.entry.pack()
@@ -75,16 +75,16 @@ class GUI(Tk):
                     raise ValueError("数字太大")
                 with open('chouhao.db','w') as f:
                     f.write(self.entry.get())
-                root.destroy()
+                popwindow.destroy()
             except ValueError as e:
                 with open('chouhao.db','w') as f:
                     f.write(self.i)
                 messagebox.showerror(title='温馨提示', message = str(e))
                 self.entry.focus_set()
 
-        Button(root, text="确定", command = on_click).pack(side=LEFT,padx = 75)
-        Button(root, text="取消", command = root.destroy).pack(side=LEFT)
-        root.mainloop()
+        Button(popwindow, text="确定", command = on_click).pack(side=LEFT,padx = 75)
+        Button(popwindow, text="取消", command = popwindow.destroy).pack(side=LEFT)
+        popwindow.mainloop()
 
     def start(self):
 
