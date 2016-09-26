@@ -6,39 +6,27 @@ import random,time,math
 from tkinter import messagebox
 
 class GUI(Tk):
-    def __init__(self,zongshu):
+    def __init__(self):
 
         Tk.__init__(self)
         self.l = list()
         self.checked = 0
-        self.stopped = False
-        self.restart = False
-        self.create_f1()
-        self.create_f2(zongshu)
-        self.create_f3()
-        self.create_f4()
-
-
-    def create_f1(self):
 
         self.f1 = Frame(self)
         with open('name.db',encoding = 'utf-8') as f:
-            self.name = f.read()
-        Label(self.f1,text= self.name,font=("隶书", 30),pady=10).pack()
+            name = f.read()
+        Label(self.f1,text= name,font=("隶书", 30),pady=10).pack()
         self.f1.pack(side=TOP)
 
-    def create_f2(self,zongshu):
-
         self.f2 = Frame(self)
-
         f21 = Frame(self.f2)
         Label(f21,text="本次抽号，将从右边方框中的数字随机抽取一个",anchor = W,justify=LEFT,wraplength = 300,font=("华文楷体", 20),borderwidth=10).pack(side=TOP)
         Button(f21,text="设置随机号数量",command = self.setting).pack(side=LEFT,padx=10)
         f21.grid(row=0,sticky=W)
         f22 = Frame(self.f2,bg='#cde6c7')
-        zongshu = int(zongshu)
+        with open('chouhao.db','r') as f:
+            zongshu = int(f.read())
         pingfanggen = int(math.sqrt(zongshu))
-
         index = 0
         for i in range(zongshu//pingfanggen):
             for j in range(pingfanggen + 1):
@@ -49,17 +37,13 @@ class GUI(Tk):
                 b.grid(row = i, column = j,padx = 5,pady = 5)
                 self.l.append(b)
         f22.grid(row=0,column=1,sticky = E)
-
         self.f2.pack(pady = 30)
 
-    def create_f3(self):
         f3 = Frame(self)
         Label(f3,text='抽中号码为',font=("微软雅黑", 30)).pack()
         self.nuLabel = Label(f3,text = '0',font=("微软雅黑", 40),fg = '#ed1941')
         self.nuLabel.pack()
         f3.pack()
-
-    def create_f4(self):
 
         f4 = Frame(self)
         self.btn1 = Button(f4,text='开始',command = self.start,width = 20,height = 3,bg = "#ffce7b")
@@ -71,7 +55,6 @@ class GUI(Tk):
         root = Toplevel()
         root.title("设置随机个数")
         root.geometry('300x100+300+300')
-
 
         l1 = Label(root, text="随机个数(设置完请重启）：")
         l1.pack()
@@ -101,22 +84,20 @@ class GUI(Tk):
 
         Button(root, text="确定", command = on_click).pack(side=LEFT,padx = 75)
         Button(root, text="取消", command = root.destroy).pack(side=LEFT)
-
         root.mainloop()
 
     def start(self):
 
         global n
         n = 0
+
         def change():
             global n
             if n >= 50:
                 self.btn1.config(state = 'normal')
                 return
             l = self.l
-            i = random.randint(0,len(l) - 1)
-            #randint(a, b) method of random.Random instance
-            #Return random integer in range [a, b], including both end points.
+            i = random.randint(0,len(l) - 1)  #randint(a,b)方法返回a到b之间的整数的随机数，包括a，也包括b
             l[self.checked].config(bg = '#00a6ac')
             l[i].config(bg = '#d71345')
             self.checked = i
@@ -127,15 +108,12 @@ class GUI(Tk):
 
         change()
 
-def main(zongshu):
+def main():
 
-    gui = GUI(zongshu)
+    gui = GUI()
     gui.title("随机抽号程序")
     gui.geometry('700x480+50+80')
     gui.mainloop()
 
 if __name__ == "__main__":
-
-    with open('chouhao.db','r') as f:
-        zongshu = f.read()
-    main(zongshu)
+    main()
