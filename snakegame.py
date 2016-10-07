@@ -115,6 +115,9 @@ class Snake(threading.Thread):
 
     def check_game_over(self,snake_point):
         x,y = snake_point[0],snake_point[1]
+        if len(self.snake_points) > 4 + 50:
+            self.gui.canvas.itemconfigure(self.gui.snake,fill='red')
+            self.gui.canvas.itemconfigure(self.gui.points_earned,fill='red')
         if not -5 < x < 505 or not -5 < y < 315 or snake_point in self.snake_points:
             self.queue.put({'game_over':True})
 
