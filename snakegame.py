@@ -65,6 +65,7 @@ class Snake(threading.Thread):
         self.snake_points = [(495,55),(485,55),(475,55),(465,55),(455,55)]
         self.food = Food(queue)
         self.direction = 'Left'
+        self.last_direction = 'Left'
         self.start()
 
     def run(self):
@@ -76,7 +77,16 @@ class Snake(threading.Thread):
             self.move()
 
     def key_pressed(self,e):
+        self.last_direction = self.direction
         self.direction = e.keysym
+        if self.last_direction == 'Up' and self.direction == 'Down':
+            self.direction = 'Up'
+        if self.last_direction == 'Down' and self.direction == 'Up':
+            self.direction = 'Down'
+        if self.last_direction == 'Left' and self.direction == "Right":
+            self.direction = 'Left'
+        if self.last_direction == 'Right' and self.direction == 'Left':
+            self.direction = 'Right'
 
     def move(self):
         new_snake_point = self.caculate_new_coordinates()
