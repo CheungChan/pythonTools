@@ -71,6 +71,7 @@ class server:
                 c.send(message.encode())
             except (ConnectionResetError, ConnectionAbortedError):
                 print(c,'发送失败')
+                del self.clients[c]
 
 
     def __sendhistory(self, data, conn):
@@ -83,6 +84,7 @@ class server:
             conn.send(message.encode())
         except:
             print(conn, '发送失败')
+            del self.clients[conn]
 
 
 if __name__ == '__main__':

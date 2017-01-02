@@ -140,7 +140,7 @@ class ChatGUI(object):
         data = json.dumps({"history":"?"})
         self.socket.send(data.encode())
         while not self.historylist:
-            time.sleep(0.1)
+            time.sleep(0.5)
         for f in self.historylist:
             # 文件名.db去掉.db来显示
             fl = len(f[:-3])
