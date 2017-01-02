@@ -21,14 +21,14 @@ class server:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(self.ADDR)
         self.socket.listen(10)
-        print('服务端启动了')
+        print('服务端启动了' + self.get_format_now())
         flag = False
         while True:
             conn, addr = self.socket.accept()
             if not debug:
                 for c in self.clients.keys():
                     if c.getpeername()[0] == addr[0]:
-                        self.__senderror("客户端已开启一个，不可再重复开启", conn)
+                        self.__senderror('【' + self.clients.get(c) + "】客户端已开启一个，不可再重复开启", conn)
                         flag = True
                         break
                 if flag:
@@ -42,7 +42,8 @@ class server:
             except (ConnectionRefusedError,ConnectionResetError):
                 name = self.clients[conn]
                 del self.clients[conn]
-                self.__printAndSendMsg('【系统提示】' + name + "下线了" + '\n', 'system')
+                self.__printAndSendMsg('【系统提示】【' + name + '】' + self.get_format_now() + "下线了" + '\n',
+                                       'system')
                 self.__printAndSendOnline()
                 return
             if not tmp:
@@ -52,7 +53,8 @@ class server:
             history = tmp.get('history')
             if name:
                 self.clients[conn] = name
-                self.__printAndSendMsg('【系统提示】' + name + "上线了" + '\n', 'system')
+                self.__printAndSendMsg( '【系统提示】【' + name + '】' + self.get_format_now() + "上线了" + '\n', \
+                                                                'system')
                 self.__printAndSendOnline()
             elif data:
                 self.__printAndSendMsg('【' + self.clients[conn] + '】：    ' + datetime.now().strftime(
@@ -70,7 +72,7 @@ class server:
 
     def __printAndSendMsg(self, data, type):
         print(data)
-        with open(os.path.join('history', datetime.now().strftime('%Y-%m-%d %H')+".db"), 'a',
+        with open(os.path.join('history', self.get_format_db()+".db"), 'a',
                   encoding='utf-8') \
                 as f:
             f.write(data)
@@ -97,7 +99,7 @@ class server:
                 self.__printAndSendOnline()
 
     def __sendhistory(self, data, conn):
-        print('发送给【' + self.clients[conn] + '】历史记录')
+        print(self.get_format_now() + '发送给【' + self.clients[conn] + '】历史记录')
         message = json.dumps({"history": data})
         try:
             conn.send(message.encode())
@@ -116,6 +118,11 @@ class server:
             del self.clients[conn]
             self.__printAndSendOnline()
 
+    def get_format_now(self):
+        return datetime.now().strftime('  %Y-%m-%d %H:%M:%S  ')
+
+    def get_format_db(self):
+        return datetime.now().strftime('%Y-%m-%d %H')
 
 if __name__ == '__main__':
     server()
