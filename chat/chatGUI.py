@@ -99,7 +99,7 @@ class ChatUI(object):
         self.tl.focus()
         self.tl.title("选择历史纪录日期")
         MODES = []
-        for f in os.listdir("D://gitdir/pythonTools/history"):
+        for f in os.listdir("D://gitdir/pythonTools/chat/history"):
                 # 文件名.db去掉.db来显示
                 fl = len(f[:-3])
                 fv = f[:-3] + " " * (60 - fl)
