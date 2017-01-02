@@ -11,6 +11,7 @@ from datetime import datetime
 from threading import *
 import os
 import webbrowser
+import re
 
 class ChatUI(object):
     def __init__(self):
@@ -69,6 +70,7 @@ class ChatUI(object):
         # self.quit.pack(side=LEFT)
         self.bfm.pack(side=LEFT,padx='20')
 
+        self.insertText(datetime.now().strftime('%Y%m%d %p')+".db")
         # show all msgs cached on msgList
         #msgListLock.acquire()
         #for msg in [msg for msg in msgList if msg.frAcc == self.toAcc]:
@@ -100,7 +102,7 @@ class ChatUI(object):
         # sock.send1ChatMsg(self.toAcc, msg)
         self.text.insert(END, msg+'\n','BOLD')
         self.text.see(END)
-        with open("history/" +datetime.now().strftime('%Y%m%d%p')+".db", 'a',encoding='utf-8') as f:
+        with open("history/" + datetime.now().strftime('%Y%m%d %p')+".db", 'a',encoding='utf-8') as f:
             f.write(tagText + msg + '\n')
 
         # self.text.config(state='disabled')
@@ -123,12 +125,7 @@ class ChatUI(object):
         self.top.config(menu=menu)
 
     def check_history(self):
-        def selected():
-            self.tl.destroy()
-            with open("history/" + self.v.get(), 'r', encoding='utf-8') as f:
-                self.text.delete('1.0','end')
-                self.text.insert('1.0', f.read())
-            self.text.see(END)
+
         # webbrowser.open("http://localhost:8000")
         self.tl = Toplevel(self.top, width=800)
         self.tl.focus()
@@ -149,11 +146,28 @@ class ChatUI(object):
 
         for text, mode in MODES:
             b = Radiobutton(self.tl, text=text,
-                            variable=self.v, value=mode,indicatoron=0,command=selected)
+                            variable=self.v, value=mode,indicatoron=0,command=self.selected)
             b.pack(anchor=W)
+
+    def selected(self):
+
+        self.tl.destroy()
+        self.insertText(self.v.get())
+
+    def insertText(self, file):
+        self.text.delete('1.0','end')
+        with open("history/" + file, 'r', encoding='utf-8') as f:
+            l = f.readlines()
+        for _l in l:
+            if re.match('【.*】：\s+\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}',_l):
+                self.text.insert(END, _l, 'color')
+            else:
+                self.text.insert(END, _l, 'BOLD')
+        self.text.see(END)
 
 
     def choose_color(self):
+
         color = askcolor()
         self.text.tag_configure("BOLD", font=self.bold_font,foreground=color[1])
 
