@@ -7,7 +7,6 @@ from tkinter.font import Font
 from functools import partial
 import re
 import os
-# import webbrowser
 import time
 import threading
 import socket
@@ -23,7 +22,6 @@ class ChatGUI(object):
         self.ADDR = (self.SERVER_IP, self.PORT)
         self.BUFSIZE = 1024 * 1024 * 10
         self.historylist = []
-
         # 设置偏函数
         MyButton = partial(Button,bg='#BFEFFF', fg='black', activeforeground='#EFFAFF',activebackground='#6AD169', width= 10, height = 2)
         # 总体界面
@@ -75,7 +73,6 @@ class ChatGUI(object):
         self.socket.send(data.encode())
         threading.Thread(target=self.__in).start()
 
-
     def __in(self):
         while True:
             try:
@@ -106,7 +103,6 @@ class ChatGUI(object):
             if online:
                 self.updateOnline(online)
 
-
     def __out(self):
         data = self.getWholeTextMsg(self.chatTextn)
         if not data.strip():
@@ -130,8 +126,6 @@ class ChatGUI(object):
 
 
     def check_history(self):
-
-        # webbrowser.open("http://localhost:8000")
         self.tl = Toplevel(self.top, width=800)
         self.tl.focus()
         self.tl.title("选择历史纪录日期")
@@ -150,16 +144,13 @@ class ChatGUI(object):
             self.tl.destroy()
             messagebox.showinfo("温馨提示", "暂无历史记录")
         self.v = StringVar()
-        # self.v.set("L") # initialize
 
         for text, mode in MODES:
             b = Radiobutton(self.tl, text=text,
                             variable=self.v, value=mode,indicatoron=0,command=self.selected)
             b.pack(anchor=W)
 
-
     def selected(self):
-
         self.tl.destroy()
         history = self.v.get()
         data = json.dumps({"history": history})
@@ -167,7 +158,6 @@ class ChatGUI(object):
 
 
     def insertText(self, data, type):
-
         if type == 'history':
             l = data.split('\n')
             self.text.insert(END, '历史记录：\n', 'system')
@@ -182,12 +172,9 @@ class ChatGUI(object):
             self.text.insert(END, data, type)
         self.text.see(END)
 
-
     def choose_color(self):
-
         color = askcolor()
         self.text.tag_configure("message", font=self.message_font,foreground=color[1])
-
 
 if __name__ == '__main__':
     ui = ChatGUI() # create main ui

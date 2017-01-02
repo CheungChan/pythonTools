@@ -33,6 +33,7 @@ class server:
                 name = self.clients[conn]
                 del self.clients[conn]
                 self.__printAndSendMsg('【系统提示】' + name + "下线了" + '\n', 'system')
+                self.__printAndSendOnline()
                 return
             if not tmp:
                 print("服务端没有接收到数据")
@@ -42,6 +43,7 @@ class server:
             if name:
                 self.clients[conn] = name
                 self.__printAndSendMsg('【系统提示】' + name + "上线了" + '\n', 'system')
+                self.__printAndSendOnline()
             elif data:
                 self.__printAndSendMsg('【' + self.clients[conn] + '】：    ' + datetime.now().strftime(
                     '%Y/%m/%d %X') + '\n','name_time')
@@ -56,23 +58,32 @@ class server:
 
 
     def __printAndSendMsg(self, data, type):
-
         print(data)
         with open(os.path.join('history', datetime.now().strftime('%Y%m%d %HXXXX')+".db"), 'a',
                   encoding='utf-8') \
                 as f:
             f.write(data)
-        online = ""
-        for name in self.clients.values():
-            online += name + '\n'
-        message = json.dumps({type: data, "online": online})
+        message = json.dumps({type: data})
         for c in self.clients.keys():
             try:
                 c.send(message.encode())
             except (ConnectionResetError, ConnectionAbortedError):
                 print(c,'发送失败')
                 del self.clients[c]
+                self.__printAndSendOnline()
 
+    def __printAndSendOnline(self):
+        online = ""
+        for name in self.clients.values():
+            online += name + '\n'
+        message = json.dumps({"online": online})
+        for c in self.clients.keys():
+            try:
+                c.send(message.encode())
+            except (ConnectionResetError, ConnectionAbortedError):
+                print(c, '发送失败')
+                del self.clients[c]
+                self.__printAndSendOnline()
 
     def __sendhistory(self, data, conn):
         print('发送给【' + self.clients[conn] + '】历史记录')
@@ -85,6 +96,7 @@ class server:
         except:
             print(conn, '发送失败')
             del self.clients[conn]
+            self.__printAndSendOnline()
 
 
 if __name__ == '__main__':
