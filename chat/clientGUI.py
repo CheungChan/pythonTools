@@ -110,7 +110,11 @@ class ChatGUI(object):
         if data.endswith('\n'):
             data = data[:-1]
         data = json.dumps({"message":data})
-        self.socket.send(data.encode())
+        try:
+            self.socket.send(data.encode())
+        except (ConnectionRefusedError,ConnectionResetError):
+            print("服务端没有启动")
+            sys.exit(-1)
         self.chatTextn.delete('1.0', 'end')
 
     def updateOnline(self, online):
