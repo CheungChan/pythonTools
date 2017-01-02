@@ -89,6 +89,7 @@ class ChatGUI(object):
             historylist = data.get('historylist')
             history = data.get('history')
             system = data.get('system')
+            error = data.get('error')
             if name_time:
                 self.insertText(name_time, 'name_time')
             if message:
@@ -100,6 +101,10 @@ class ChatGUI(object):
             if history:
                 self.text.delete('1.0', END)
                 self.insertText(history,'history')
+            if error:
+                self.text.delete('1.0', END)
+                self.insertText(error, 'system')
+                return
             if online:
                 self.updateOnline(online)
 

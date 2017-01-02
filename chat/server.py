@@ -11,6 +11,7 @@ import os.path
 class server:
 
     def __init__(self):
+        debug = False
         self.HOST = ''
         self.PORT = 21567
         self.BUFSIZE = 1024 * 10
@@ -21,8 +22,17 @@ class server:
         self.socket.bind(self.ADDR)
         self.socket.listen(10)
         print('服务端启动了')
+        flag = False
         while True:
             conn, addr = self.socket.accept()
+            if not debug:
+                for c in self.clients.keys():
+                    if c.getpeername()[0] == addr[0]:
+                        self.__senderror("客户端已开启一个，不可再重复开启", conn)
+                        flag = True
+                        break
+                if flag:
+                    continue
             threading.Thread(target=self.__in, args=(conn,)).start()
 
     def __in(self, conn):
@@ -88,10 +98,17 @@ class server:
 
     def __sendhistory(self, data, conn):
         print('发送给【' + self.clients[conn] + '】历史记录')
-        online = ""
-        for name in self.clients.values():
-            online += name + '\n'
-        message = json.dumps({"history": data, "online": online})
+        message = json.dumps({"history": data})
+        try:
+            conn.send(message.encode())
+        except:
+            print(conn, '发送失败')
+            del self.clients[conn]
+            self.__printAndSendOnline()
+
+    def __senderror(self, data, conn):
+        print(data)
+        message = json.dumps({"error": data})
         try:
             conn.send(message.encode())
         except:
