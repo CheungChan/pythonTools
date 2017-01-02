@@ -54,7 +54,10 @@ class server:
             online += name + '\n'
         message = json.dumps({'message': data, "online": online})
         for c in self.clients.keys():
-            c.send(message.encode())
+            try:
+                c.send(message.encode())
+            except (ConnectionResetError, ConnectionAbortedError):
+                print(c,'发送失败')
 
 if __name__ == '__main__':
     server()
