@@ -50,7 +50,8 @@ class server:
                 self.__printAndSendMsg(data + '\n', 'message')
             elif history:
                 if history == '?':
-                    l = json.dumps({"historylist": os.listdir(os.path.join(os.getcwd(),'history'))})
+                    files = os.listdir(os.path.join(os.getcwd(),'history'))[::-1]
+                    l = json.dumps({"historylist": files})
                     conn.send(l.encode())
                 else:
                     with open(os.path.join(os.getcwd(), 'history', history), encoding='utf-8') as f:
@@ -59,7 +60,7 @@ class server:
 
     def __printAndSendMsg(self, data, type):
         print(data)
-        with open(os.path.join('history', datetime.now().strftime('%Y%m%d %HXXXX')+".db"), 'a',
+        with open(os.path.join('history', datetime.now().strftime('%Y-%m-%d %H')+".db"), 'a',
                   encoding='utf-8') \
                 as f:
             f.write(data)
