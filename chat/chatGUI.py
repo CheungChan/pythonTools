@@ -108,7 +108,7 @@ class ChatUI(object):
             self.tl.destroy()
             messagebox.showinfo("温馨提示", "暂无历史记录")
         self.v = StringVar()
-        self.v.set("L") # initialize
+        # self.v.set("L") # initialize
 
         for text, mode in MODES:
             b = Radiobutton(self.tl, text=text,
