@@ -79,7 +79,9 @@ class ChatGUI(object):
             sys.exit(-1)
         data = json.dumps({"name": os.getlogin()})
         self.socket.send(data.encode())
-        threading.Thread(target=self.__in).start()
+        t = threading.Thread(target=self.__in)
+        t.setDaemon(True)
+        t.start()
 
     def __in(self):
         while True:
@@ -203,9 +205,10 @@ class ChatGUI(object):
 
     def saveas(self):
         f = asksaveasfilename(initialfile='未命名.txt', defaultextension='.txt')
-        with open(f, 'w', encoding='utf-8') as fh:
-            msg = self.text.get('1.0',END)
-            fh.write(msg)
+        if f:
+            with open(f, 'w', encoding='utf-8') as fh:
+                msg = self.text.get('1.0',END)
+                fh.write(msg)
 
 if __name__ == '__main__':
     ui = ChatGUI() # create main ui
