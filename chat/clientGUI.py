@@ -136,8 +136,8 @@ class ChatGUI(object):
                 self.updateOnline(online)
 
     def __out(self):
-        if 'noti' in self.__dict__:
-            self.noti.destroy()
+        # if 'noti' in self.__dict__:
+        #     self.noti.destroy()
         data = self.getWholeTextMsg(self.chatTextn)
         if not data.strip():
             return
