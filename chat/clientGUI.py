@@ -18,8 +18,13 @@ import json
 class ChatGUI(object):
 
     def __init__(self):
+        debug = True
+        if debug:
+            self.PORT = 21568
+            print('debug模式启动')
+        else:
+            self.PORT = 21567
         self.SERVER_IP = 'localhost'
-        self.PORT = 21567
         self.ADDR = (self.SERVER_IP, self.PORT)
         self.BUFSIZE = 1024 * 1024 * 10
         self.historylist = []
@@ -70,13 +75,18 @@ class ChatGUI(object):
         self.send = MyButton(self.bfm, text='send', command=self.__out)
         self.send.pack()
         self.bfm.pack(side=LEFT,padx='20')
+        self.connect()
 
+
+    def connect(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.socket.connect(self.ADDR)
         except (ConnectionRefusedError, ConnectionResetError):
             print("服务端没有启动")
-            sys.exit(-1)
+            time.sleep(5)
+            self.connect()
+            return
         data = json.dumps({"name": os.getlogin()})
         self.socket.send(data.encode())
         t = threading.Thread(target=self.__in)
@@ -87,9 +97,11 @@ class ChatGUI(object):
         while True:
             try:
                 data = self.socket.recv(self.BUFSIZE).decode()
-            except (ConnectionRefusedError,ConnectionResetError):
+            except (ConnectionRefusedError,ConnectionResetError,ConnectionAbortedError,json.decoder.JSONDecodeError):
                 print("服务端没有启动")
-                sys.exit(-1)
+                time.sleep(5)
+                self.connect()
+                return
             if not data:
                 print('没有从服务端接收到数据')
             try:
@@ -107,7 +119,8 @@ class ChatGUI(object):
                 self.insertText(name_time, 'name_time')
             if message:
                 self.insertText(message,'message')
-                self.notification()
+                if not self.text.focus_get():
+                    self.notification()
             if system:
                 self.insertText(system, 'system')
             if historylist:
@@ -123,17 +136,23 @@ class ChatGUI(object):
                 self.updateOnline(online)
 
     def __out(self):
+        if 'noti' in self.__dict__:
+            self.noti.destroy()
         data = self.getWholeTextMsg(self.chatTextn)
         if not data.strip():
             return
         if data.endswith('\n'):
             data = data[:-1]
         data = json.dumps({"message":data})
-        try:
-            self.socket.send(data.encode())
-        except (ConnectionRefusedError,ConnectionResetError):
-            print("服务端没有启动")
-            sys.exit(-1)
+        while True:
+            try:
+                self.socket.send(data.encode())
+                break
+            except (ConnectionRefusedError,ConnectionResetError):
+                print("服务端没有启动")
+                time.sleep(5)
+                self.connect()
+                return
         self.chatTextn.delete('1.0', 'end')
 
     def updateOnline(self, online):
@@ -215,12 +234,12 @@ class ChatGUI(object):
                 fh.write(msg)
 
     def notification(self):
-        noti = Tk()
-        noti.after(5000, noti.destroy)
-        self.notiL = Label(noti, text='群聊有新消息', font=('Verdana', 12), fg='red')
+        self.noti = Tk()
+        self.noti.after(5000, self.noti.destroy)
+        self.notiL = Label(self.noti, text='群聊有新消息', font=('Verdana', 12), fg='red')
         self.notiL.pack()
-        noti.geometry('150x50+1050+550')
-        noti.mainloop()
+        self.noti.geometry('150x50+1050+550')
+        self.noti.mainloop()
 
 if __name__ == '__main__':
     ui = ChatGUI() # create main ui

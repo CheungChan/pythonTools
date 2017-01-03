@@ -11,10 +11,11 @@ import os.path
 class server:
 
     def __init__(self):
-        debug = False
+        debug = True
         self.HOST = ''
         if debug:
             self.PORT = 21568
+            print('debug模式启动')
         else:
             self.PORT = 21567
         self.BUFSIZE = 1024 * 10
