@@ -17,7 +17,7 @@ import json
 class ChatGUI(object):
 
     def __init__(self):
-        self.SERVER_IP = '192.168.3.13'
+        self.SERVER_IP = 'localhost'
         self.PORT = 21567
         self.ADDR = (self.SERVER_IP, self.PORT)
         self.BUFSIZE = 1024 * 1024 * 10
@@ -39,17 +39,21 @@ class ChatGUI(object):
         self.textsb_v =Scrollbar(self.textfm, orient=VERTICAL)
         self.text = Text(self.textfm, height=30, width=80, relief = 'flat', yscrollcommand=self.textsb_v.set)
         self.text.bind('<KeyPress>', lambda e:"break")
+        # 标签配置
         self.text.tag_configure('name_time', foreground='blue')
         self.message_font = Font(family="Consolas", size=11, weight="bold")
         self.text.tag_configure("message", font=self.message_font)
         self.text.tag_configure("system", font=self.message_font, foreground='red')
+
         self.text.pack(side=LEFT, fill=BOTH)
         self.textsb_v.pack(fill=Y,expand=0, side=LEFT, anchor=N)
         #在线人数
         Label(self.textfm,text='群成员').pack(side="top")
         self.online = Text(self.textfm, height = 25, width = 20)
+
         self.online_font = Font(family="微软雅黑", size=10)
         self.online.tag_configure("oneline_font", font= self.online_font, foreground="red")
+
         self.online.bind('<KeyPress>', lambda e:"break")
         self.online.pack(side=RIGHT, fill=Y)
         self.textfm.pack()
@@ -104,7 +108,7 @@ class ChatGUI(object):
             if error:
                 self.text.delete('1.0', END)
                 self.insertText(error, 'system')
-                return
+                sys.exit(-2)
             if online:
                 self.updateOnline(online)
 
@@ -142,8 +146,10 @@ class ChatGUI(object):
 
         data = json.dumps({"history":"?"})
         self.socket.send(data.encode())
-        while not self.historylist:
+        i = 0
+        while not self.historylist and i < 5:
             time.sleep(0.5)
+            i = i + 1
         for f in self.historylist:
             # 文件名.db去掉.db来显示
             fl = len(f[:-3])
@@ -171,7 +177,7 @@ class ChatGUI(object):
             l = data.split('\n')
             self.text.insert(END, '历史记录：\n', 'system')
             for _l in l:
-                if re.match('^【.*】：\s+\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}$', _l):
+                if re.match('^【.*】：\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}  $', _l):
                     self.text.insert(END, _l + '\n', 'name_time')
                 elif _l.startswith('【系统提示】'):
                     self.text.insert(END, _l + '\n', 'system')

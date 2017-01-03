@@ -57,8 +57,7 @@ class server:
                                                                 'system')
                 self.__printAndSendOnline()
             elif data:
-                self.__printAndSendMsg('【' + self.clients[conn] + '】：    ' + datetime.now().strftime(
-                    '%Y/%m/%d %X') + '\n','name_time')
+                self.__printAndSendMsg('【' + self.clients[conn] + '】：    ' + self.get_format_now() + '\n','name_time')
                 self.__printAndSendMsg(data + '\n', 'message')
             elif history:
                 if history == '?':
@@ -81,9 +80,7 @@ class server:
             try:
                 c.send(message.encode())
             except (ConnectionResetError, ConnectionAbortedError):
-                print(c,'发送失败')
-                del self.clients[c]
-                self.__printAndSendOnline()
+                self.__handle_error(c)
 
     def __printAndSendOnline(self):
         online = ""
@@ -94,9 +91,7 @@ class server:
             try:
                 c.send(message.encode())
             except (ConnectionResetError, ConnectionAbortedError):
-                print(c, '发送失败')
-                del self.clients[c]
-                self.__printAndSendOnline()
+                self.__handle_error(c)
 
     def __sendhistory(self, data, conn):
         print(self.get_format_now() + '发送给【' + self.clients[conn] + '】历史记录')
@@ -104,9 +99,13 @@ class server:
         try:
             conn.send(message.encode())
         except:
-            print(conn, '发送失败')
-            del self.clients[conn]
-            self.__printAndSendOnline()
+            self.__handle_error(conn)
+
+    def __handle_error(self, conn):
+        name = self.clients[conn]
+        print(name, '发送失败')
+        del self.clients[conn]
+        self.__printAndSendOnline()
 
     def __senderror(self, data, conn):
         print(data)
@@ -114,9 +113,7 @@ class server:
         try:
             conn.send(message.encode())
         except:
-            print(conn, '发送失败')
-            del self.clients[conn]
-            self.__printAndSendOnline()
+            self.__handle_error(conn)
 
     def get_format_now(self):
         return datetime.now().strftime('  %Y-%m-%d %H:%M:%S  ')
