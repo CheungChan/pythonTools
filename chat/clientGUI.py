@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter.colorchooser import *
 from tkinter.font import Font
+from tkinter.filedialog import *
 from functools import partial
 import re
 import os
@@ -31,8 +32,11 @@ class ChatGUI(object):
         self.top.resizable(False, False)
         # 增加菜单
         menu = Menu(self.top)
+        menu.add_command(label='复制', command=self.copy)
+        menu.add_command(label='另存为', command=self.saveas)
         menu.add_command(label="历史记录", command=self.check_history)
         menu.add_command(label="选择颜色", command=self.choose_color)
+        menu.add_command(label='关于', command=self.info)
         self.top.config(menu=menu)
         # 消息框
         self.textfm = Frame(self.top)
@@ -190,6 +194,18 @@ class ChatGUI(object):
     def choose_color(self):
         color = askcolor()
         self.text.tag_configure("message", font=self.message_font,foreground=color[1])
+
+    def copy(self):
+        self.text.event_generate('<<Copy>>')
+
+    def info(self):
+        messagebox.showinfo('版权信息', '版权信息不保留，随意拷贝')
+
+    def saveas(self):
+        f = asksaveasfilename(initialfile='未命名.txt', defaultextension='.txt')
+        with open(f, 'w', encoding='utf-8') as fh:
+            msg = self.text.get('1.0',END)
+            fh.write(msg)
 
 if __name__ == '__main__':
     ui = ChatGUI() # create main ui
