@@ -13,7 +13,10 @@ class server:
     def __init__(self):
         debug = False
         self.HOST = ''
-        self.PORT = 21567
+        if debug:
+            self.PORT = 21568
+        else:
+            self.PORT = 21567
         self.BUFSIZE = 1024 * 10
         self.ADDR = (self.HOST, self.PORT)
         self.clients = {}
@@ -39,7 +42,7 @@ class server:
         while True:
             try:
                 tmp = json.loads(conn.recv(self.BUFSIZE).decode())
-            except (ConnectionRefusedError,ConnectionResetError):
+            except (ConnectionRefusedError,ConnectionResetError,ConnectionAbortedError,json.decoder.JSONDecodeError):
                 name = self.clients[conn]
                 del self.clients[conn]
                 self.__printAndSendMsg('【系统提示】【' + name + '】' + self.get_format_now() + "下线了" + '\n',
@@ -104,7 +107,7 @@ class server:
     def __handle_error(self, conn):
         name = self.clients[conn]
         print(name, '发送失败')
-        del self.clients[conn]
+        self.clients.pop(conn)
         self.__printAndSendOnline()
 
     def __senderror(self, data, conn):

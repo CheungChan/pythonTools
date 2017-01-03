@@ -92,7 +92,10 @@ class ChatGUI(object):
                 sys.exit(-1)
             if not data:
                 print('没有从服务端接收到数据')
-            data = json.loads(data)
+            try:
+                data = json.loads(data)
+            except:
+                continue
             name_time = data.get('name_time')
             message = data.get('message')
             online = data.get('online')
@@ -104,6 +107,7 @@ class ChatGUI(object):
                 self.insertText(name_time, 'name_time')
             if message:
                 self.insertText(message,'message')
+                self.notification()
             if system:
                 self.insertText(system, 'system')
             if historylist:
@@ -209,6 +213,14 @@ class ChatGUI(object):
             with open(f, 'w', encoding='utf-8') as fh:
                 msg = self.text.get('1.0',END)
                 fh.write(msg)
+
+    def notification(self):
+        noti = Tk()
+        noti.after(5000, noti.destroy)
+        self.notiL = Label(noti, text='群聊有新消息', font=('Verdana', 12), fg='red')
+        self.notiL.pack()
+        noti.geometry('150x50+1050+550')
+        noti.mainloop()
 
 if __name__ == '__main__':
     ui = ChatGUI() # create main ui
