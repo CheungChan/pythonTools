@@ -1,7 +1,7 @@
 from selenium import webdriver
 import time
 from apscheduler.schedulers.blocking import BlockingScheduler
-
+import sys
 
 def logout(driver):
     driver.get('http://10.4.1.17:81/')
@@ -36,7 +36,11 @@ def main():
 
 
 if __name__ == '__main__':
-    scheduler = BlockingScheduler()
-    scheduler.add_job(main, 'cron', day_of_week='0-6', hour=0, minute=10)
-    scheduler.start()
-    print('定时任务开始执行')
+    if len(sys.argv) == 1:
+        print('定时任务开始执行')
+        scheduler = BlockingScheduler()
+        scheduler.add_job(main, 'cron', day_of_week='0-6', hour=0, minute=10)
+        scheduler.start()
+    elif sys.argv[1] == 'debug':
+        print("debug模式运行")
+        main()
