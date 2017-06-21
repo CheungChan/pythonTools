@@ -5,10 +5,12 @@ import os
 import zipfile
 import time
 import datetime
+import sys
 
 dir_name = 'post_chewang'
 zip_name = "post_chewang.zip"
-url = 'http://10.2.52.29:5000/post_chewang.zip'
+url = 'http://10.2.52.29:9000/post_chewang.zip'
+password = '1472'
 
 def rmtree(bak=True):
 	if os.path.isdir(dir_name):
@@ -37,8 +39,13 @@ def rm_zip():
 	print(f'删除文件{zip_name}')
 	
 if __name__ == '__main__':
-	rmtree()
+	s = input('请输入执行密码')
+	if s != password:
+		print('密码输入错误')
+		time.sleep(5)
+		sys.exit(-1)
 	download_zip()
+	rmtree()
 	unzip()
 	rm_zip()
 	time.sleep(2)
