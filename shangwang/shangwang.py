@@ -12,7 +12,7 @@ def login(driver):
     try:
         driver.get('http://10.4.1.17/')
         driver.find_element_by_css_selector('#username').send_keys('zhang.chen3')
-        driver.find_element_by_css_selector('#password').send_keys('Alang34925!!')
+        driver.find_element_by_css_selector('#password').send_keys('Alang34925//')
         driver.find_element_by_css_selector('tbody>tr:nth-child(3)>td:nth-child(3)').click()
     except:
         login(driver)
@@ -21,7 +21,7 @@ def login(driver):
 def main():
     option = webdriver.ChromeOptions()
     option.add_argument('--start-maximized')
-    driver = webdriver.Chrome('e:/chromedriver.exe', chrome_options=option)
+    driver = webdriver.Chrome('d:/chromedriver.exe', chrome_options=option)
     driver.set_page_load_timeout(5)
     try:
         logout(driver)
