@@ -109,7 +109,7 @@ class GUI(Tk):
         change()
 
 def main():
-
+    random.seed(time.time())
     gui = GUI()
     gui.title("随机抽号程序")
     gui.geometry('700x480+50+80')
