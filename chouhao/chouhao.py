@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 # @Author: cheungchan
 from tkinter import *
-import random,time,math
+import random,math
 from tkinter import messagebox
+#import secrets
+#secret_generator=secrets.SystemRandom()
 
 class GUI(Tk):
     def __init__(self):
@@ -97,6 +99,7 @@ class GUI(Tk):
                 self.btn1.config(state = 'normal')
                 return
             l = self.l
+            #i = secret_generator.randint(1,len(l)-1)
             i = random.randint(0,len(l) - 1)  #randint(a,b)方法返回a到b之间的整数的随机数，包括a，也包括b
             l[self.checked].config(bg = '#00a6ac')
             l[i].config(bg = '#d71345')
@@ -109,7 +112,7 @@ class GUI(Tk):
         change()
 
 def main():
-    random.seed(time.time())
+    random.seed(a=None, version=2)
     gui = GUI()
     gui.title("随机抽号程序")
     gui.geometry('700x480+50+80')
